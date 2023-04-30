@@ -1,0 +1,187 @@
+# PCL program
+int collums = 5;
+int current_triger_type = 0;
+string sond_id_filename = "audio_list_stym.txt";
+string pic_id_filename = "total_visual_stym.txt";
+string sequence_filename = "sequence_3_trial.txt";
+string question_filename = "question.txt";
+array<int> ids[0];
+array<int> ids_pic[0];
+array<int> types_pic[0];
+array<int> types_sound_1[0];
+array<int> types_sound_2[0];
+array<string> sounds[0];
+array<string> pics[0];
+array<string> questions[0];
+array<int> sequence[0][0];
+string tab = "   ";
+string new_string = "\n";
+string info;
+
+input_file f = new input_file;
+
+sub
+int findID(int id, array<int,1> arr)
+begin
+    int k = 1;
+    term.print_line("k=" + string(id));
+    loop until k >= arr.count() || id == arr[k] begin k = k + 1;  end;
+    return k;
+end;
+
+f.open("instruction.txt");
+string instructions = "";
+loop until
+    f.end_of_file()
+begin
+    instructions = instructions + f.get_string() + " ";
+end;
+f.close();
+
+instruction_trial.present();
+
+f.open(sond_id_filename);
+f.set_delimiter('\t');
+int count = 1;
+loop until
+    f.end_of_file()
+begin
+    ids.add(f.get_int());
+    sounds.add(f.get_string());
+    types_sound_1.add(f.get_int());
+    types_sound_2.add(f.get_int());
+    count = count + 1;
+end;
+f.close();
+
+f.open(pic_id_filename);
+f.set_delimiter('\t');
+count = 1;
+loop until
+    f.end_of_file()
+begin
+    ids_pic.add(f.get_int());
+    pics.add(f.get_string());
+    types_pic.add(f.get_int());
+    count = count + 1;
+end;
+f.close();
+
+array<int> temp_int[collums];
+int col = 1;
+f.open(sequence_filename);
+f.set_delimiter('\t');
+count = 1;
+loop until
+    f.end_of_file()
+begin
+    if col <= collums then
+        temp_int[col] = f.get_int();
+        col = col + 1;
+    end;
+    if col > collums then
+        sequence.add(temp_int);
+        col = 1;
+        count = count + 1;
+    end;
+end;
+f.close();
+
+loop
+int i = 1;
+until i > sequence.count()
+begin
+    term.print_line("start");
+    term.print_line(sequence[i]);
+    cross_trial.present();
+    term.print_line("presenting text");
+    text1.load();
+    text1.set_caption("Арбуз красный ли он?");
+    text1.redraw();
+    wfile.set_filename(sounds[findID(sequence[i][1], ids)]);
+    wfile.load();
+    wfile1.set_filename(sounds[findID(sequence[i][2], ids)]);
+    wfile1.load();
+    sound_trial.present();
+
+    port_code_event_2.set_port_code(types_sound_2[findID(sequence[i][2], ids)]);
+    port_code_trial.present();
+    string tempstr = sounds[findID(sequence[i][2], ids)];
+    int i1 = tempstr.find("_");
+    int i2 = tempstr.find(".wav");
+    string wname = "G:\\Sound\\temp\\" + tempstr.substring(i1 + 1, i2 - i1 - 1) + ".wav";
+    term.print_line("soun2 trigger:" + tempstr.substring(i1 + 1, i2 - i1 - 1) + " " + string(types_sound_1[findID(sequence[i][2], ids)]));
+    current_triger_type = types_sound_1[findID(sequence[i][2], ids)];
+    term.print_line(current_triger_type);
+
+    sound_event2.set_port_code(types_sound_1[findID(sequence[i][2], ids)]);
+    sound_trial2.present();
+    array<string> pic_to_show[2];
+    pic_to_show[1] = pics[findID(sequence[i][4], ids_pic)];
+    pic_to_show[2] = pics[findID(sequence[i][5], ids_pic)];
+    pic_to_show.shuffle();
+    bitmap_file.set_filename(pic_to_show[1]);
+    bitmap_file.load();
+    bitmap_file2.set_filename(pic_to_show[2]);
+    bitmap_file2.load();
+
+    picture_trial.present();
+    wfile.set_filename(sounds[findID(sequence[i][3], ids)]);
+    wfile.load();
+    sound_trial.present();
+
+    if current_triger_type == 10 || current_triger_type == 11 || current_triger_type == 14 || current_triger_type == 15 then
+      question_trial_1.present();
+      stimulus_data last = stimulus_manager.last_stimulus_data(); 
+      int reaction_time = last.reaction_time();
+      term.print_line("RT1: " + string(reaction_time));
+      term.print_line(string(sequence[i][1]) + tab + string(sequence[i][2]) + tab + string(sequence[i][3]) + tab + string(sequence[i][4]) + tab + string(sequence[i][5]) + tab + "RT:" + string(reaction_time) + tab + "button:" + string(last.button()) + new_string);
+      info.append(string(sequence[i][1]) + tab + string(sequence[i][2]) + tab + string(sequence[i][3]) + tab + string(sequence[i][4]) + tab + string(sequence[i][5]) + tab + "RT:" + string(reaction_time) + tab + "button:" + string(last.button()) + new_string);
+
+    elseif current_triger_type == 12 || current_triger_type == 13 || current_triger_type == 16 || current_triger_type == 17 then
+      question_trial_2.present();
+      stimulus_data last_2 = stimulus_manager.last_stimulus_data(); 
+      int reaction_time_2 = last_2.reaction_time();
+      term.print_line("RT1: " + string(reaction_time_2));
+      term.print_line(string(sequence[i][1]) + tab + string(sequence[i][2]) + tab + string(sequence[i][3]) + tab + string(sequence[i][4]) + tab + string(sequence[i][5]) + tab + "RT:" + string(reaction_time_2) + tab + "button:" + string(last_2.button()) + new_string);
+      info.append(string(sequence[i][1]) + tab + string(sequence[i][2]) + tab + string(sequence[i][3]) + tab + string(sequence[i][4]) + tab + string(sequence[i][5]) + tab + "RT:" + string(reaction_time_2) + tab + "button:" + string(last_2.button()) + new_string);
+end;
+
+// Present picture
+// RT
+/*
+stimulus_data last = stimulus_manager.last_stimulus_data(); 
+int reaction_time = last.reaction_time();
+term.print_line("RT1: " + string(reaction_time));
+term.print_line(string(sequence[i][1]) + tab + string(sequence[i][2]) + tab + string(sequence[i][3]) + tab + string(sequence[i][4]) + tab + string(sequence[i][5]) + tab + "RT:" + string(reaction_time) + tab + "touch_response:" + string(last.button()) + new_string);
+info.append(string(sequence[i][1]) + tab + string(sequence[i][2]) + tab + string(sequence[i][3]) + tab + string(sequence[i][4]) + tab + string(sequence[i][5]) + tab + "RT:" + string(reaction_time) + tab + "touch_response:" + string(last.button()) + new_string);
+*/
+// End RT
+if current_triger_type > 39 && current_triger_type < 50 then
+    srecording.set_base_filename(wname);
+    recordingtrial.set_duration(3000);
+    recordingtrial.present();
+end;
+term.print_line("end recording");
+
+// Resting
+/*
+if i == 170 || i == 300 then 
+    instruction_trial.set_duration(5 * 60 * 1000); // 5 min
+    instruction1.set_caption("Отдохните 5 минут, если готовы, нажмите 1 или 2");
+    instruction1.redraw();
+    instruction_trial.present();
+end;
+*/
+// End of resting
+
+i = i + 1;
+end;
+
+string filename = logfile.subject() + "_additional" + ".log";
+output_file file = new output_file;
+file.open(filename, true);
+string information = "NAME: " + tab + logfile.subject() + "\n";
+information.append(info);
+file.print(information);
+file.close();
