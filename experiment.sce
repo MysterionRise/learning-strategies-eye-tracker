@@ -10,164 +10,113 @@ response_port_output = false;
 response_logging = log_active;
 
 begin;
-  wavefile{ filename = "sound\\notify.wav"; } wfile;
   wavefile{ filename = "sound\\notify.wav"; } wfile1;
+  wavefile{ filename = "sound\\notify.wav"; } wfile2;
+  wavefile{ filename = "sound\\notify.wav"; } wfile3;
   wavefile{ filename = "sound\\bech.wav"; } wfile_new;
+
   picture {
     text { caption = " "; } txt;
     x = 0; y = 0;
   } pic;
 
-  #sound
+  # sound
   trial {
     nothing {};
     time = 0;
 
     stimulus_event {
-      sound { wavefile wfile; } sound_sound;
+      sound { wavefile wfile1; } sound_sound1;
       parallel = true;
-      time = 0;
-    } sound_event;
+      # параметры старта после креста
+      time = 800;
+    } sound_event1;
+
+    stimulus_event {
+      sound { wavefile wfile2; } sound_sound2;
+      parallel = true;
+      # параметры старта звука
+      time = 2500;
+    } sound_event2;
+
+    stimulus_event {
+      sound { wavefile wfile3; } sound_sound3;
+      parallel = true;
+      # параметры старта звука
+      time = 3500;
+    } sound_event3;
 
     stimulus_event {
       picture {
         text { caption = "Test1"; } text1;
         x = 0; y = -300;
       } pic1;
-      time = 50;
+      time = 800;
     } pict1;
   } sound_trial;
 
   trial {
-    trial_duration = 2000; #duration 3 sec
-
-    stimulus_event {
-      sound { wavefile wfile; } sound_sound1;
-      parallel = true;
-      #port_code = 3; #trigger
-    } sound_event2;
-  } sound_trial2;
-
-  trial {
-    trial_duration = 100; #duration 0.1
+    trial_duration = 100; # duration 0.1
 
     stimulus_event {
       picture pic;
-      #port_code = 21; #trigger_2
     } port_code_event_2;
   } port_code_trial;
 
-  #picture
+  # picture
   trial {
-    trial_duration = 3000; #duration 3 sec
+    trial_duration = 3000; # duration 3 sec
     picture {
       bitmap { filename = ""; preload = false; } bitmap_file;
       x = -200; y = 0;
       bitmap { filename = ""; preload = false; } bitmap_file2;
       x = 200; y = 0;
+      text { caption = "Test1"; } text2;
+      x = 0; y = -300;
     } picture_pic;
   } picture_trial;
 
-  #cross
+  # cross
   trial {
-    trial_duration = 1000; #time to present the instruction
+    trial_duration = 1000; # time to present the instruction
     stimulus_event {
       picture {
         text { caption = "+"; } instruction;
         x = 0; y = 0;
       };
-      #response_active = true;
     };
   } cross_trial;
 
-  #text question
-  #trial {
-  #   trial_duration = 5000; #time to present the instruction
-  #      picture {
-  #         text { caption = "Test1"; } text1;
-  #         x = 0; y = -300;
-  #      } pic1;
-  #      #response_active = true;
-  #} text_question_trial;
-
-  #question
+  # question
   trial {
-    trial_duration = 5000; #time to present the sentence - 5sec
+    trial_duration = 30000; # time to present the sentence - 5sec
     trial_type = first_response;
 
     stimulus_event {
       picture {
-        bitmap { filename = "pics\\Jody_black.jpg"; preload = true; } ;
+        bitmap { filename = "pics\\kb.jpg"; preload = true; } ;
         x = 0; y = 0;
       } question_pic;
       response_active = true;
-      duration = 5000;
+      duration = 30000;
     };
-  } question_trial_1;
+  } question_trial;
 
-  #question_trial_2
+  # end of word trial
+  # instruction trial
   trial {
-    trial_duration = 5000; #time to present the sentence - 5sec
+    trial_duration = 30000; # time to present the instruction
     trial_type = first_response;
 
     stimulus_event {
       picture {
+        text { caption = "Press the button"; } instruction1;
+         x = 0; y = 0;
        
-        bitmap { filename = "pics\\Jody.jpg"; preload = true; } ;
-        x = 0; y = 0;
-      } question_pic_tr_2;
-      response_active = true;
-      duration = 5000;
-    };
-  } question_trial_2;
-
-  #trial to present question
-  #end of word trial
-
-  #instruction trial
-  trial {
-    trial_duration = 70000; #time to present the instruction
-    trial_type = first_response;
-
-    stimulus_event {
-      picture {
-        bitmap { filename = "pics\\Jody.jpg"; preload = true; } ;
-        x = 0; y = 0;
       };
       response_active = true;
-      duration = 70000;
-    } pic_Joy;
+      duration = 30000;
 
-    stimulus_event {
-      sound { wavefile wfile_new; } sound_sound_instr;
-    } sound_event_instr;
-  } instruction_trial;
-  #end instruction trial
-
-  #end instruction trial
-
-  #sound trial
-  trial {
-    trial_duration = 3000;
-    start_delay = 500;
-    stimulus_event {
-      picture {
-        #text { caption = "+--"; } icross;
-        bitmap { filename = "pics\\recording_img.jpg"; preload = true; } ;
-        x = 0; y = 0;
-      } p1;
-      time = 0;
-      code = "target";
-    };
-    stimulus_event {
-      sound_recording {
-        duration = 3000;
-        base_filename = "G:\\Sound\\temp\\test3.wav";
-        #use_counter = false;
-        #use_date_time = false;
-      } srecording;
-      #deltat = 0;
-      code = "rec";
-    };
-  } recordingtrial;
-  #end sound trial
+   };
+} instruction_trial;
+#end instruction trial
